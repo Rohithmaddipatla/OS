@@ -1,0 +1,58 @@
+#include <stdio.h>
+#include <limits.h>
+
+void bestFit(int blockSize[], int m, int processSize[], int n) {
+    int allocation[n]; // Stores the block allocated to each process
+
+    // Initialize allocation array to -1 (indicating no block is allocated)
+    for (int i = 0; i < n; i++) {
+        allocation[i] = -1;
+    }
+
+    // Iterate over each process
+    for (int i = 0; i < n; i++) {
+        int bestIndex = -1;
+        int minFit = INT_MAX;
+
+        // Find the best fitting block for the current process
+        for (int j = 0; j < m; j++) {
+            if (blockSize[j] >= processSize[i]) {
+                int remainingSpace = blockSize[j] - processSize[i];
+                if (remainingSpace < minFit) {
+                    minFit = remainingSpace;
+                    bestIndex = j;
+                }
+            }
+        }
+
+        // If a suitable block is found, allocate it to the process
+        if (bestIndex != -1) {
+            allocation[i] = bestIndex;
+            blockSize[bestIndex] -= processSize[i]; // Update the remaining space in the block
+        }
+    }
+
+    // Print allocation results
+    printf("Process No.\tProcess Size\tBlock No.\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d\t\t%d\t\t", i + 1, processSize[i]);
+        if (allocation[i] != -1) {
+            printf("%d\n", allocation[i] + 1);
+        } else {
+            printf("Not Allocated\n");
+        }
+    }
+}
+
+int main() {
+    int blockSize[] = {100, 500, 200, 300, 600}; // Size of memory blocks
+    int processSize[] = {212, 417, 112, 426};    // Size of processes
+
+    int m = sizeof(blockSize) / sizeof(blockSize[0]); // Number of blocks
+    int n = sizeof(processSize) / sizeof(processSize[0]); // Number of processes
+
+    printf("Best Fit Memory Allocation\n\n");
+    bestFit(blockSize, m, processSize, n);
+
+    return 0;
+}
